@@ -71,15 +71,13 @@ namespace SalesPrediction.Controllers {
         [Route("SaveFile")]
         [HttpPost]
         public JsonResult SaveFile() {
+            var httpRequest = Request.Form;
+            var postedFile = httpRequest.Files[0];
+            string filename = postedFile.FileName;
+            string sqlDataSource = _configuration.GetConnectionString("Database");
+            DataTable table = new DataTable();
+            string csvData = System.IO.File.ReadAllText(filename);
             try {
-                var httpRequest = Request.Form;
-                var postedFile = httpRequest.Files[0];
-                string filename = postedFile.FileName;
-                var physicalPath = _env.ContentRootPath + "/Photos/" + filename;
-                string sqlDataSource = _configuration.GetConnectionString("Database");
-                DataTable table = new DataTable();
-                string csvData = File.ReadAllText(filename);
-
                 foreach (string row in csvData.Split('\n')) {
                     if (!string.IsNullOrEmpty(row)) {
                         table.Rows.Add();
@@ -90,6 +88,7 @@ namespace SalesPrediction.Controllers {
                         }
                     }
                 }
+
                 using (SqlConnection myCon = new SqlConnection(sqlDataSource)) {
                     myCon.Open();
                     using (SqlBulkCopy sqlBulkCopy = new SqlBulkCopy(myCon)) {
@@ -101,13 +100,7 @@ namespace SalesPrediction.Controllers {
                     }
                 }
 
-
-
-                using (var stream = new FileStream(physicalPath, FileMode.Create)) {
-                    postedFile.CopyTo(stream);
-                }
-
-                return new JsonResult(filename);
+                return new JsonResult("Successfully imported");
             } catch (Exception) {
 
                 return new JsonResult("Error");

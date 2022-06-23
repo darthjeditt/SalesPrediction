@@ -3,6 +3,7 @@ import {Table} from 'react-bootstrap';
 
 import {Button,ButtonToolbar} from 'react-bootstrap';
 import {AddModal} from './AddModal';
+import {EditModal} from './EditModal';
 
 export class Predict extends Component{
 
@@ -27,17 +28,10 @@ export class Predict extends Component{
         this.refreshList();
     }
 
-    updateSales(saleid){
-        fetch(process.env.REACT_APP_API+'user/'+saleid,{
-            method:'DELETE',
-            header:{'Accept':'application/json',
-                    'Content-Type':'application/json'}
-        })
-    }
-
     render(){
         const {predsales: psales}=this.state;
         let addModalClose=()=>this.setState({addModalShow:false});
+        let editModalClose=()=>this.setState({editModalShow:false});
         return(
             <div >
                 <Table className="mt-4" striped bordered hover size="sm">
@@ -60,9 +54,12 @@ export class Predict extends Component{
                 </Table>      
                 <ButtonToolbar>
                     <Button variant='primary' onClick={()=>this.setState({addModalShow:true})}>Import</Button>
-                    <Button variant='primary' onClick={()=>this.updateSales}>Predict</Button>
+                    &nbsp;&nbsp;&nbsp;
+                    <Button variant='primary' onClick={()=>this.setState({editModalShow:true})}>Predict</Button>
                     <AddModal show={this.state.addModalShow}
                     onHide={addModalClose}/>
+                    <EditModal show={this.state.editModalShow}
+                    onHide={editModalClose}/>
                 </ButtonToolbar>
             </div>
         )
