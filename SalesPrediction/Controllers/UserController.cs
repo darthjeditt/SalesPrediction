@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -7,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -14,10 +16,12 @@ namespace SalesPrediction.Controllers {
     [Route("[controller]")]
     [ApiController]
     public class UserController : ControllerBase {
-        private readonly IConfiguration _configuration;
 
-        public UserController(IConfiguration configuration) {
+        private readonly IConfiguration _configuration;
+        private readonly IWebHostEnvironment _env;
+        public UserController(IConfiguration configuration, IWebHostEnvironment env) {
             _configuration = configuration;
+            _env = env;
         }
 
         [HttpGet]
@@ -42,37 +46,10 @@ namespace SalesPrediction.Controllers {
         }
 
 
-        //[HttpPost]
-        //public JsonResult Post(TblSales sales) {
-        //    string query = @"
-        //            insert into dbo.Department values 
-        //            ('" + sales.DepartmentName + @"')
-        //            ";
-        //    DataTable table = new DataTable();
-        //    string sqlDataSource = _configuration.GetConnectionString("EmployeeAppCon");
-        //    SqlDataReader myReader;
-        //    using (SqlConnection myCon = new SqlConnection(sqlDataSource)) {
-        //        myCon.Open();
-        //        using (SqlCommand myCommand = new SqlCommand(query, myCon)) {
-        //            myReader = myCommand.ExecuteReader();
-        //            table.Load(myReader); ;
-
-        //            myReader.Close();
-        //            myCon.Close();
-        //        }
-        //    }
-
-        //    return new JsonResult("Added Successfully");
-        //}
-
-
-        [HttpPut]
-        public JsonResult Put(TblSales sales) {
+        [HttpDelete]
+        public JsonResult Delete() {
             string query = @"
-                    update dbo.TblSales set 
-                    SalesId = '" + sales.SalesId + @"'
-                    where SalesId = " + sales.SalesId + @" 
-                    ";
+                    truncate table dbo.TblSales";
             DataTable table = new DataTable();
             string sqlDataSource = _configuration.GetConnectionString("Database");
             SqlDataReader myReader;
@@ -87,7 +64,54 @@ namespace SalesPrediction.Controllers {
                 }
             }
 
-            return new JsonResult("Updated Successfully");
+            return new JsonResult("Deleted Successfully");
+        }
+
+
+        [Route("SaveFile")]
+        [HttpPost]
+        public JsonResult SaveFile() {
+            try {
+                var httpRequest = Request.Form;
+                var postedFile = httpRequest.Files[0];
+                string filename = postedFile.FileName;
+                var physicalPath = _env.ContentRootPath + "/Photos/" + filename;
+                string sqlDataSource = _configuration.GetConnectionString("Database");
+                DataTable table = new DataTable();
+                string csvData = File.ReadAllText(filename);
+
+                foreach (string row in csvData.Split('\n')) {
+                    if (!string.IsNullOrEmpty(row)) {
+                        table.Rows.Add();
+                        int i = 0;
+                        foreach (string cell in row.Split(',')) {
+                            table.Rows[table.Rows.Count - 1][i] = cell;
+                            i++;
+                        }
+                    }
+                }
+                using (SqlConnection myCon = new SqlConnection(sqlDataSource)) {
+                    myCon.Open();
+                    using (SqlBulkCopy sqlBulkCopy = new SqlBulkCopy(myCon)) {
+                        //Set the database table name.
+                        sqlBulkCopy.DestinationTableName = "dbo.TblSales";
+                        myCon.Open();
+                        sqlBulkCopy.WriteToServer(table);
+                        myCon.Close();
+                    }
+                }
+
+
+
+                using (var stream = new FileStream(physicalPath, FileMode.Create)) {
+                    postedFile.CopyTo(stream);
+                }
+
+                return new JsonResult(filename);
+            } catch (Exception) {
+
+                return new JsonResult("Error");
+            }
         }
     }
 }
