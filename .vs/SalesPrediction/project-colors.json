@@ -1,0 +1,16 @@
+{
+  "Version": 1,
+  "ProjectMap": {
+    "72ebbb2e-2b0f-4f63-bbe6-45840818fde0": {
+      "ProjectGuid": "72ebbb2e-2b0f-4f63-bbe6-45840818fde0",
+      "DisplayName": "SalesPrediction",
+      "ColorIndex": 0
+    },
+    "144d097b-4f84-481e-ba12-cead0a6a44bd": {
+      "ProjectGuid": "144d097b-4f84-481e-ba12-cead0a6a44bd",
+      "DisplayName": "SalesWebApp",
+      "ColorIndex": 1
+    }
+  },
+  "NextColorIndex": 2
+}
