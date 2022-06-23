@@ -43,3 +43,5 @@ C:\GIT\SalesPrediction\SalesPrediction\bin\Debug\netcoreapp3.1\Newtonsoft.Json.B
 C:\GIT\SalesPrediction\SalesPrediction\bin\Debug\netcoreapp3.1\System.Data.SqlClient.dll
 C:\GIT\SalesPrediction\SalesPrediction\bin\Debug\netcoreapp3.1\runtimes\unix\lib\netcoreapp2.1\System.Data.SqlClient.dll
 C:\GIT\SalesPrediction\SalesPrediction\bin\Debug\netcoreapp3.1\runtimes\win\lib\netcoreapp2.1\System.Data.SqlClient.dll
+C:\GIT\SalesPrediction\SalesPrediction\bin\Debug\netcoreapp3.1\System.Net.Http.Formatting.dll
+C:\GIT\SalesPrediction\SalesPrediction\bin\Debug\netcoreapp3.1\System.Web.Http.dll

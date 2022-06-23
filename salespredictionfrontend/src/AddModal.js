@@ -43,9 +43,9 @@ export class AddModal extends Component{
         const formData = new FormData();
         formData.append(
             "myFile",
-            event.target.files,
+            event.target.files
         );
-        axios.post("user/SaveFile", formData);
+        axios.post(process.env.REACT_APP_API+"user/SaveFile", formData);
     }
 
     render(){
@@ -69,7 +69,7 @@ centered
             <Col sm={6}>
                 <Form>
                     <Form.Group>
-                    <input type="File" onChange={this.handleFileSelected}/>
+                    <input name='myFile' type="File" onChange={this.handleFileSelected}/>
                     </Form.Group>
                     <Button variant="primary" onClick={this.handleSubmit}>Import</Button>
                     &nbsp;&nbsp;&nbsp;

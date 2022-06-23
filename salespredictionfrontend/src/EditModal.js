@@ -46,7 +46,6 @@ export class EditModal extends Component{
     test(event){
         event.preventDefault();
         alert('Success');
-
     }
 
     handleFileSelected(event){
